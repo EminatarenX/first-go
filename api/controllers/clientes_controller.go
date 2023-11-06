@@ -88,3 +88,25 @@ func GetCliente(c *fiber.Ctx) error{
 		"data" : cliente,
 	})
 }
+
+func DeleteClient(c *fiber.Ctx) error {
+
+	pool := db.Db().Database("first-go").Collection("clientes")
+
+	id, err := primitive.ObjectIDFromHex(c.Params("id")) 
+
+	if err != nil {
+		panic(err)
+	}
+
+	_, err = pool.DeleteOne(context.Background(), bson.M{"_id": id})
+
+	if err != nil {
+		panic(err)
+	}
+
+	return c.JSON(&fiber.Map{
+		"message" : "Cliente eliminado",
+	})
+	
+}

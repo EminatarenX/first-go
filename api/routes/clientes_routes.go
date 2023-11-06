@@ -12,4 +12,5 @@ func ClientesRouter( app *fiber.App){
 	client.Get("/", controllers.GetClientes)
 	client.Post("/", controllers.CreateCliente)
 	client.Get("/:id", controllers.GetCliente)
+	client.Delete("/:id", controllers.DeleteClient)
 }
