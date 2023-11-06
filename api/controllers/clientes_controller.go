@@ -6,6 +6,7 @@ import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func GetClientes(c *fiber.Ctx) error{
@@ -109,4 +110,57 @@ func DeleteClient(c *fiber.Ctx) error {
 		"message" : "Cliente eliminado",
 	})
 	
+}
+
+func UpdateClient ( c *fiber.Ctx) error {
+
+	pool := db.Db().Database("first-go").Collection("clientes")
+
+	idParams := c.Params("id")
+	if len(idParams) != 24 {
+		return c.Status(400).JSON(&fiber.Map{
+			"message" : "El id no es valido",
+		})
+	
+	}
+
+	id, err := primitive.ObjectIDFromHex(c.Params("id")) 
+
+	if err != nil {
+		panic(err)
+	}
+
+	cliente := struct {
+		Name string `json:"name"`
+		Email string `json:"email"`
+	}{}
+	c.BodyParser(&cliente)
+
+	_, err = pool.UpdateOne(context.Background(), bson.M{"_id": id}, bson.D{
+		{"$set", bson.D{
+			{"name", cliente.Name},
+			{"email", cliente.Email},
+		}},
+	})
+
+	if err != nil {
+		
+		if err == mongo.ErrNoDocuments {
+			return c.Status(404).JSON(&fiber.Map{
+				"message" : "Cliente no encontrado",
+			})
+
+		}else {
+			return c.Status(500).JSON(&fiber.Map{
+				"message" : "Error al actualizar el cliente",
+				"error" : err,
+			})
+	
+		}
+	}
+
+	return c.JSON(&fiber.Map{
+		"message" : "Cliente actualizado",
+		"data" : cliente,
+	})
 }

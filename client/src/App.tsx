@@ -116,6 +116,57 @@ function App() {
 
   }
 
+  const editarCliente = async(e: FormDataEvent) => {
+    e.preventDefault()
+
+    setCargando(true)
+    
+    try {
+
+      let cliente = {
+        name: modal.name,
+        email: modal.email,
+      }
+
+      const respuesta = await fetch(`/api/clientes/${modal._id}`, {
+        method: 'PUT', 
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(cliente)
+      })
+
+      const { data } = await respuesta.json()
+
+      
+
+      const clientesActualizados = clientes.map(clienteState => {
+        if(clienteState._id === modal._id){
+          
+          return {
+            ...clienteState,
+            name: data.name,
+            email: data.email,
+          }
+        }
+        return clienteState
+      })
+
+      setClientes(clientesActualizados)
+      
+    } catch (error) {
+      alert(error)
+    }finally{
+      setCargando(false)
+      setModal({
+        _id: '',
+        name: '',
+        email: '',
+        open: false,
+      })
+    }
+  }
+
   useEffect(() => {
     const obtenerClientes = async () => {
       try {
@@ -137,7 +188,7 @@ function App() {
     {
       modal.open && (
         <div
-        className='bg-slate-950 opacity-80 fixed top-0 left-0 w-full h-screen z-0 flex justify-center p-10 '
+        className='bg-slate-950 opacity-90 fixed top-0 left-0 w-full h-screen z-0 flex justify-center p-10 '
         >
           <button
             className='fixed top-0 right-0 m-5'
@@ -169,10 +220,10 @@ function App() {
           <div
             className='bg-slate-900 w-96 rounded-lg shadow-md p-10'
           >
-            <h2 className='text-4xl font-bold mb-5'>Editar Cliente</h2>
+            <h2 className='text-4xl font-bold mb-5 text-white'>Editar Cliente</h2>
             <form 
               className='flex flex-col items-center  min-h-screen text-white'
-              onSubmit={() => console.log('editando...')}>
+              onSubmit={editarCliente}>
 
               <input 
                 className='bg-gray-800 border border-gray-600 p-2 rounded-lg shadow-md w-full'
@@ -194,7 +245,7 @@ function App() {
                 className='bg-blue-500 hover:bg-blue-600 p-2 rounded-lg shadow-md w-full mt-5'
                 type='submit'
               >
-                modificar cliente
+                Modificar cliente
               </button>
               <button
                 className='bg-red-500 hover:bg-red-600 p-2 rounded-lg shadow-md w-full mt-5'
@@ -217,7 +268,7 @@ function App() {
       className='bg-slate-950 opacity-80 fixed top-0 left-0 w-full h-full z-0 flex items-center justify-center'
     >
       <div
-        className='h-96 w-96 border border-b-blue-600 border-blue-300 rounded-full animate-spin'
+        className='h-96 w-96 border-4 border-b-blue-700 border-blue-300 rounded-full animate-spin'
       >
       </div>
 
