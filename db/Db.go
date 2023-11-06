@@ -8,7 +8,7 @@ import (
 
 func Db () *mongo.Client {
 
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb://localhost:27017/first-go"))
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI("mongodb+srv://emi:naog7412@cluster0.ouboxvu.mongodb.net/?retryWrites=true&w=majority"))
 
 	if err != nil {
 		panic(err)
